@@ -13,7 +13,6 @@ const cron = require('node-cron');
 const Message = require('./src/models/message');
 const mongoose = require('mongoose');
 
-
 const io = new Server(server, {
   cors: {
     origin: "*"
