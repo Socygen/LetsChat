@@ -32,8 +32,6 @@ app.get('/', (req, res) => {
 app.use('/', my_routes);
 chatSocket(io);
 
-
-
 mongoose.connect(process.env.DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -63,7 +61,7 @@ async function deleteMessages() {
   }
 }
 
-cron.schedule('*/1 * * * *', deleteMessages);
+cron.schedule('*/5 * * * *', deleteMessages);
 
 console.log('Auto Delete Bot Started ...');
 
