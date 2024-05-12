@@ -63,7 +63,7 @@ async function deleteMessages() {
   }
 }
 
-cron.schedule('*/10 * * * *', deleteMessages);
+cron.schedule('*/1 * * * *', deleteMessages);
 
 console.log('Auto Delete Bot Started ...');
 
