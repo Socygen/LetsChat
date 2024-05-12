@@ -44,8 +44,10 @@ mongoose.connect(process.env.DB, {
 async function deleteMessages() {
   try {
     const messagesToDelete = await Message.find({
-      receiverone: { $ne: null, $ne: '' },
-      receivertwo: { $ne: null, $ne: '' }, 
+      $and: [
+        { receiverone: { $exists: true, $ne: '' } },
+        { receivertwo: { $exists: true, $ne: '' } }
+      ]
     });
 
     if (messagesToDelete.length > 0) {
