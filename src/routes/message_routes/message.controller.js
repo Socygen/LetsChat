@@ -23,7 +23,6 @@ const sendMessage = async (req, res) => {
         }
 
         const existingMessage = await MessageModel.findOne({
-           chatId,
            flag
         });
 
