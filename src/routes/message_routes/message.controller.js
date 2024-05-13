@@ -25,7 +25,7 @@ const sendMessage = async (req, res) => {
         const existingMessage = await MessageModel.findOne({ flag });
 
         if (existingMessage) {
-            return res.status(200).json({ status:true, message: "A message with the same flag already exists for this chat" });
+            return res.status(200).json({ status:true, message: "message sent successfully" });
         } else {
             const newMessage = await MessageModel.create({
                 text,
