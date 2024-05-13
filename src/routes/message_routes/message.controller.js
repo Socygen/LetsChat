@@ -6,8 +6,7 @@ const sendMessage = async (req, res) => {
     let userIds = [senderId, receiverId];
     let chatId;
 
-    try { 
-        
+    try {    
         const chat = await ChatModel.findOne({
             users: { $all: userIds },
             type: "private"
@@ -23,38 +22,49 @@ const sendMessage = async (req, res) => {
           chatId = newChat._id;
         }
 
-        const newMessage = await MessageModel.create({
-            text,
-            image,
-            file,
-            audio,
-            video,
-            location,
-            sent,
-            receive,
-            pending,
-            read,
-            senderId,
-            receiverId,
+        const existingMessage = await MessageModel.findOne({
             chatId,
             flag
-        })
-        const chatUpdate = await ChatModel.findByIdAndUpdate(chatId, {
-         latestMessage: text
-        }, {
-          new: true
-        })
-        await newMessage.populate('senderId receiverId', 'userName profileImage _id');
-        res.send({
-            data: newMessage,
-            message: "Message sent successfully",
-            status: true,
         });
+
+        if (existingMessage) {
+            return res.status(400).json({ status: false, message: "Message with the same flag already exists for this chat" });
+        } else {
+            const newMessage = await MessageModel.create({
+                text,
+                image,
+                file,
+                audio,
+                video,
+                location,
+                sent,
+                receive,
+                pending,
+                read,
+                senderId,
+                receiverId,
+                chatId,
+                flag
+            });
+
+            const chatUpdate = await ChatModel.findByIdAndUpdate(chatId, {
+                latestMessage: text
+            }, { new: true });
+
+            await newMessage.populate('senderId receiverId', 'userName profileImage _id').execPopulate();
+
+            return res.send({
+                data: newMessage,
+                message: "Message sent successfully",
+                status: true,
+            });
+        }
         
     } catch (error) {
         res.status(500).json({ status: false, error: error.message });
     }
 };
+
 
 const myMessages = async (req, res) => {
     const chatId = req.query.chatId
