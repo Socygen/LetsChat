@@ -27,7 +27,7 @@ const sendMessage = async (req, res) => {
         });
 
         if (existingMessage) {
-            return res.status(200).json({ status:true, message: "message sent successfully" });
+            return res.status(200).json({ status:true, message: "Existing Message" });
         } else {
             const newMessage = await MessageModel.create({
                 text,
