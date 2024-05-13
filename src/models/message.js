@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const {ObjectId} = mongoose.Schema.Types
 
 const messageSchema = new mongoose.Schema({
+flag: {type: String, required: false},
 text: {type: String, required: false},
 image: {type: String, required: false},
 file: {type: String, required: false},
