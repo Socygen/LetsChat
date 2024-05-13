@@ -22,7 +22,10 @@ const sendMessage = async (req, res) => {
             chatId = newChat._id;
         }
 
-        const existingMessage = await MessageModel.findOne({ flag });
+        const existingMessage = await MessageModel.findOne({
+           chatId,
+           flag
+        });
 
         if (existingMessage) {
             return res.status(200).json({ status:true, message: "message sent successfully" });
