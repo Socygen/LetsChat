@@ -2,7 +2,7 @@ const MessageModel = require('../../models/message');
 const ChatModel = require('../../models/chat');
 
 const sendMessage = async (req, res) => {
-    const { text, image, file, audio, video, location, sent, receive, pending, read, senderId, receiverId} = req.body;
+    const { text, image, file, audio, video, location, sent, receive, pending, read, senderId, receiverId, flag} = req.body;
     let userIds = [senderId, receiverId];
     let chatId;
 
@@ -36,7 +36,8 @@ const sendMessage = async (req, res) => {
             read,
             senderId,
             receiverId,
-            chatId
+            chatId,
+            flag
         })
         const chatUpdate = await ChatModel.findByIdAndUpdate(chatId, {
          latestMessage: text
