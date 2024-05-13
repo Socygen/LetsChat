@@ -64,8 +64,18 @@ const myMessages = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10
     const skip = (page - 1) * limit 
     try {
+        const messages = await MessageModel.find({
+            chatId: chatId
+        }).populate({
+            path: "senderId receiverId",
+            select:"userName profileImage _id"
+        }).sort({createdAt: -1}).skip(skip).limit(limit)
+        res.send({
+            data: messages,
+            status: true,
+        })
 
-        if (receiverOne) {
+         if (receiverOne) {
             messages = await Promise.all(messages.map(async (message) => {
                 message.receiverone = receiverOne;
                 await message.save();
@@ -80,19 +90,6 @@ const myMessages = async (req, res) => {
                 return message;
             }));
          }
-
-        const messages = await MessageModel.find({
-            chatId: chatId
-        }).populate({
-            path: "senderId receiverId",
-            select:"userName profileImage _id"
-        }).sort({createdAt: -1}).skip(skip).limit(limit)
-        res.send({
-            data: messages,
-            status: true,
-        })
-
-
 
     } catch (error) {
         res.status(403).json({ status: false, error: error })
