@@ -67,44 +67,47 @@ const sendMessage = async (req, res) => {
 };
 
 const myMessages = async (req, res) => {
-    const chatId = req.query.chatId
+    const chatId = req.query.chatId;
     const receiverOne = req.query.receiverOne;
     const receiverTwo = req.query.receiverTwo;
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
-    const skip = (page - 1) * limit 
-    try {
-        const messages = await MessageModel.find({
-            chatId: chatId
-        }).populate({
-            path: "senderId receiverId",
-            select:"userName profileImage _id"
-        }).sort({createdAt: -1}).skip(skip).limit(limit)
-        res.send({
-            data: messages,
-            status: true,
-        })
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-         if (receiverOne) {
+    try {
+        let messages = await MessageModel.find({ chatId: chatId })
+            .populate({
+                path: "senderId receiverId",
+                select: "userName profileImage _id"
+            })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        if (receiverOne) {
             messages = await Promise.all(messages.map(async (message) => {
                 message.receiverone = receiverOne;
                 await message.save();
                 return message;
             }));
-         }
+        }
 
-         if (receiverTwo) {
+        if (receiverTwo) {
             messages = await Promise.all(messages.map(async (message) => {
                 message.receivertwo = receiverTwo;
                 await message.save();
                 return message;
             }));
-         }
+        }
 
+        res.send({
+            data: messages,
+            status: true,
+        });
     } catch (error) {
-        res.status(403).json({ status: false, error: error })
+        res.status(403).json({ status: false, error: error });
     }
-}
+};
 
 module.exports = {
     sendMessage,
