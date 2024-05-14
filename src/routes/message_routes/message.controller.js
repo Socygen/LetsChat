@@ -79,7 +79,7 @@ const sendNotification = async (notificationData) => {
     if (!!findUser?.fcmToken) {
       if (findUser?.fcmToken.includes("Expo")) {
         let formdata = {
-          to: findUser.fcmToken,
+          to: findUser?.fcmToken,
           title: "New Message",
           body: notificationData?.text,
         };
