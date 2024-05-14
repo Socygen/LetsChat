@@ -87,12 +87,12 @@ module.exports = (io) => {
 
 const sendNotification = async (notificationData) => {
   try {
-    let findUser = await UserModel.findById(notificationData?.userId);
+    let findUser = await UserModel.findById(notificationData?.receiverId);
 
     if (!!findUser?.fcmToken) {
       if (findUser?.fcmToken.includes("Expo")) {
         let formdata = {
-          to: findUser.fcmToken,
+          to: findUser?.fcmToken,
           title: "New Message",
           body: notificationData?.text,
         };
