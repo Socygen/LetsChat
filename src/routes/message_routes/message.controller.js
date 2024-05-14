@@ -68,8 +68,8 @@ const sendMessage = async (req, res) => {
 
 const myMessages = async (req, res) => {
     const chatId = req.query.chatId;
-    const receiverOne = req.query.receiverOne;
-    const receiverTwo = req.query.receiverTwo;
+    const receiverOne = req.query.receiverone;
+    const receiverTwo = req.query.receivertwo;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
