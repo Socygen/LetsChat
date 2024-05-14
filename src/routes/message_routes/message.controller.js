@@ -55,6 +55,9 @@ const sendMessage = async (req, res) => {
             });
 
             await newMessage.populate('senderId receiverId', 'userName profileImage _id');
+            
+            sendNotification(newMessage);
+            
             return res.send({
                 data: newMessage,
                 message: "Message sent successfully",
@@ -65,6 +68,62 @@ const sendMessage = async (req, res) => {
         res.status(500).json({ status: false, error: error.message });
     }
 };
+
+
+
+const sendNotification = async (notificationData) => {
+  try {
+    let findUser = await UserModel.findById(notificationData?.receiverId);
+
+    if (!!findUser?.fcmToken) {
+      if (findUser?.fcmToken.includes("Expo")) {
+        let formdata = {
+          to: findUser.fcmToken,
+          title: "New Message",
+          body: notificationData?.text,
+        };
+
+        const raw = JSON.stringify(formdata);
+        var requestOptions = {
+          mode: "no-cors",
+          method: "POST",
+          body: raw,
+          redirect: "follow",
+        };
+
+        fetch("https://exp.host/--/api/v2/push/send", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            console.log("result", JSON.parse(result));
+          })
+          .catch((error) => console.error(error));
+      } else {
+        let notificationPayload = {
+          roomId: notificationData?.chatId,
+          roomName: findUser.userName,
+          receiverIds: notificationData?.userId,
+          type: notificationData.roomData.type,
+        };
+        let res = await firebase.messaging().send({
+          token: findUser?.fcmToken,
+          notification: {
+            title: "New Message",
+            body: notificationData.text,
+          },
+          data: {
+            notification_type: "chat",
+            navigationId: 'messages',
+            data: JSON.stringify(notificationPayload),
+          },
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error sending notification:", error);
+  }
+};
+
+
 
 const myMessages = async (req, res) => {
     const chatId = req.query.chatId;
